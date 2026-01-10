@@ -65,7 +65,7 @@ public class NetworkManager : MonoBehaviour
 
         // ブロードキャストで自身を通知
         using var broadcast = new OscClient("255.255.255.255", config.SendPort);
-        broadcast.Send("/VRnotrame", _devicePath?.TrimStart('/') ?? "unknown");
+        broadcast.Send("/setAddress/VRnotrame", _devicePath?.TrimStart('/') ?? "unknown");
     }
 
     private void SendPlayerData()

@@ -178,6 +178,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Knife
       objectReference: {fileID: 0}
+    - target: {fileID: -2422315340263230684, guid: 8195e5f2b5f8437448299fae6f15baec, type: 3}
+      propertyPath: m_TagString
+      value: Knife
+      objectReference: {fileID: 0}
     - target: {fileID: -1041279737980340588, guid: 8195e5f2b5f8437448299fae6f15baec, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 

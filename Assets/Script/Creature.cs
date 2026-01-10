@@ -18,18 +18,12 @@ public class Creature : MonoBehaviour
 
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnHit(Collider other, GameObject me)
     {
         if (other.gameObject.name == "Knife" && isAttack)
         {
-            ps.Play();
-            ps.gameObject.transform.position = other.transform.position;
-            sendOSC.SendOsc("/event/attackBoss");
+            sendOSC.SendOsc("/cue/call/KillCreature");
             isAttack = false;
         }
-    }
-    public void SetBool(bool b)
-    {
-        isAttack = b;
     }
 }

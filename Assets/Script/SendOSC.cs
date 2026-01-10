@@ -17,9 +17,9 @@ public class SendOSC : MonoBehaviour
     public void SendOsc(string addressAndValue)
     {
         var idx = addressAndValue.LastIndexOf(':');
-        if (idx <= 0) { networkManager.Client.Send("/VRnotrame" + addressAndValue); return; }
+        if (idx <= 0) { networkManager.Client.Send(addressAndValue); return; }
 
-        var address = "/VRnotrame" + addressAndValue.Substring(0, idx);
+        var address = addressAndValue.Substring(0, idx);
         var value = addressAndValue.Substring(idx + 1);
 
         // 型自動判定

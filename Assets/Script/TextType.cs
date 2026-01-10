@@ -7,7 +7,10 @@ public class TextType : MonoBehaviour
     public TextMeshPro tmp;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     // Update is called once per frame
-
+    void Start()
+    {
+        Type(gameObject.name);
+    }
 
     public void Type(string target)
     {
@@ -20,7 +23,7 @@ public class TextType : MonoBehaviour
         {
             bases += target[i];
             tmp.text = bases;
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.03f);
         }
     }
 }
