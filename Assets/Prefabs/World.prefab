@@ -7867,6 +7867,7 @@ GameObject:
   - component: {fileID: 3239578872353952873}
   - component: {fileID: 8805086303441884187}
   - component: {fileID: 6145086991395957369}
+  - component: {fileID: 1608718076017343010}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -8283,6 +8284,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hapticClip: {fileID: 2460798210113038985, guid: b1cd3d232a100fa4cb127fd10cbf7bb3, type: 3}
+--- !u!114 &1608718076017343010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5678715843249045866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2515becb1d8df3648a13dad69dbac644, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  forwardTarget: {fileID: 0}
+  searchObjectName: PLANT
 --- !u!1 &5746643468778081880
 GameObject:
   m_ObjectHideFlags: 0
