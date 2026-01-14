@@ -4605,12 +4605,12 @@ MonoBehaviour:
   PrefabsToSpawn:
   - Labels: 1024
     Prefabs:
-    - {fileID: 495595424356940587, guid: 4770d26b7639ac045bd86eb674e7fc9c, type: 3}
+    - {fileID: 3388819497676214952, guid: 454541c0e287dae43a5c43c529d67790, type: 3}
     PrefabSelection: 0
-    MatchAspectRatio: 1
+    MatchAspectRatio: 0
     CalculateFacingDirection: 1
     Scaling: 0
-    Alignment: 2
+    Alignment: 3
     IgnorePrefabSize: 0
   - Labels: 128
     Prefabs:
@@ -15808,6 +15808,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: 5fe85687a1e41cb48b83d620cd1a9665, type: 2}
   playerTracker: {fileID: 1108134168}
+  enableTestSend: 1
 --- !u!4 &1720954142
 Transform:
   m_ObjectHideFlags: 0
