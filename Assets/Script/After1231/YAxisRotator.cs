@@ -49,8 +49,13 @@ public class YAxisRotator : MonoBehaviour
         // 累積回転角度を更新
         totalRotation += Mathf.Abs(rotationThisFrame);
 
-        // 180度ごとにカウント
-        int currentRotationCount = Mathf.FloorToInt(totalRotation / 180f);
+        // 最初180度で1回目、その後は360度ごとにカウント
+        // 180, 540, 900, 1260... = 180 + 360*(n-1)
+        int currentRotationCount = 0;
+        if (totalRotation >= 180f)
+        {
+            currentRotationCount = 1 + Mathf.FloorToInt((totalRotation - 180f) / 360f);
+        }
 
         // 新しい180度区間に達したらログ出力とOSC送信
         if (currentRotationCount > lastCountedRotation)

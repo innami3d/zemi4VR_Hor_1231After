@@ -82,49 +82,8 @@ public class NetworkManager : MonoBehaviour
 
     void OnDestroy()
     {
-        if (_testCoroutine != null)
-        {
-            StopCoroutine(_testCoroutine);
-        }
         _client?.Dispose();
         if (Instance == this) Instance = null;
-    }
-
-    /// <summary>
-    /// 1秒ごとにテストUDPを送信するコルーチン
-    /// </summary>
-    private IEnumerator TestSendCoroutine()
-    {
-        int count = 0;
-        while (true)
-        {
-            yield return new WaitForSeconds(1f);
-            count++;
-
-            // クライアント情報をログ出力
-            Debug.Log($"[UDP TEST #{count}] Client: {(_client != null ? "OK" : "NULL")}, " +
-                      $"TargetIP: {_currentTargetIP ?? config?.TargetIP ?? "N/A"}, " +
-                      $"Port: {config?.SendPort ?? 0}, " +
-                      $"Time: {Time.time:F2}");
-
-            // テスト送信
-            if (_client != null)
-            {
-                try
-                {
-                    _client.Send("/test/ping", count);
-                    Debug.Log($"[UDP TEST #{count}] Send SUCCESS");
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError($"[UDP TEST #{count}] Send FAILED: {e.Message}");
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"[UDP TEST #{count}] Cannot send - client is null!");
-            }
-        }
     }
 
     public void InitializeNetwork()
@@ -189,5 +148,25 @@ public class NetworkManager : MonoBehaviour
         _client?.Dispose();
         _client = new OscClient(ip, config.SendPort);
         _currentTargetIP = ip;
+    }
+
+    /// <summary>
+    /// /Direct/VRFrame に "Trigger" をブロードキャストで送信
+    /// </summary>
+    public void BroadcastTriggerToVRFrame()
+    {
+        using var broadcast = new OscClient("255.255.255.255", 20005);
+        broadcast.Send("/Direct/VRrame", "Trigger");
+        Debug.Log("[NetworkManager] Broadcast: /Direct/VRFrame Trigger");
+    }
+
+    /// <summary>
+    /// /Direct/Windows に "Trigger" をブロードキャストで送信
+    /// </summary>
+    public void BroadcastTriggerToWindows()
+    {
+        using var broadcast = new OscClient("255.255.255.255", 20002);
+        broadcast.Send("/Direct/Windows", "Trigger");
+        Debug.Log("[NetworkManager] Broadcast: /Direct/Windows Trigger");
     }
 }
