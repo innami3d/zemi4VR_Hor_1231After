@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.XR;
 
 /// <summary>
-/// トリガーを引くと進行方向にRaycastを飛ばし、ヒット地点にエフェクトを生成
+/// Trigger入力でRaycastし、ヒット位置にエフェクトを生成する
 /// </summary>
 public class TriggerRaycastEffect : MonoBehaviour
 {
@@ -13,7 +13,7 @@ public class TriggerRaycastEffect : MonoBehaviour
     [Header("エフェクト設定")]
     [Tooltip("ヒット時に生成するエフェクトPrefab")]
     public GameObject effectPrefab;
-    
+
     [Header("Zakoヒット時クローン設定")]
     [Tooltip("Zakoヒット時に生成するPrefab（未設定なら生成しない）")]
     public GameObject cloneOnZakoHit;
@@ -22,7 +22,7 @@ public class TriggerRaycastEffect : MonoBehaviour
     public float cloneDestroyDelay = 2f;
 
     [Header("Zakoヒット時Emission設定")]
-    [Tooltip("Emissionを赤く光らせるまでの秒数")]
+    [Tooltip("Emissionを赤へフェードするまでの秒数")]
     public float emissionFadeDuration = 0.5f;
 
     [Tooltip("Emissionの赤色強度")]
@@ -32,23 +32,20 @@ public class TriggerRaycastEffect : MonoBehaviour
     [Tooltip("Raycastの最大距離")]
     public float maxDistance = 100f;
 
-    [Tooltip("ヒット対象のレイヤー")]
-    public LayerMask hitLayers = ~0; // デフォルトは全レイヤー
+    [Tooltip("ヒット判定対象のレイヤー")]
+    public LayerMask hitLayers = ~0;
 
-    [Header("コントローラー設定")]
-    [Tooltip("右手を使用（falseで左手）")]
-    public bool useRightHand = true;
-
-    [Header("Raycast発射元")]
-    [Tooltip("Raycast発射元Transform（未設定ならこのオブジェクト）")]
+    [Header("Raycast起点")]
+    [Tooltip("Raycastを飛ばすTransform（未設定ならこのオブジェクト）")]
     public Transform rayOrigin;
 
     [Header("デバッグ")]
     public bool showDebugRay = true;
 
-    // 入力デバイス
-    private InputDevice _controller;
-    private bool _wasTriggered = false;
+    private InputDevice _rightController;
+    private InputDevice _leftController;
+    private bool _wasRightTriggered;
+    private bool _wasLeftTriggered;
 
     void Start()
     {
@@ -58,50 +55,71 @@ public class TriggerRaycastEffect : MonoBehaviour
         }
     }
 
-    #region 有効/無効制御
-
     public void Enable() => isEnabled = true;
     public void Disable() => isEnabled = false;
     public void SetEnabled(bool enabled) => isEnabled = enabled;
-
-    #endregion
 
     void Update()
     {
         if (!isEnabled) return;
         if (effectPrefab == null) return;
 
-        // コントローラー取得
-        UpdateController();
-
-        // トリガー入力チェック
-        if (_controller.isValid && _controller.TryGetFeatureValue(CommonUsages.triggerButton, out bool isTriggered))
-        {
-            // トリガーが押された瞬間のみ実行
-            if (isTriggered && !_wasTriggered)
-            {
-                ShootRaycast();
-            }
-            _wasTriggered = isTriggered;
-        }
+        UpdateControllers();
+        CheckTriggerAndShoot(ref _rightController, ref _wasRightTriggered);
+        CheckTriggerAndShoot(ref _leftController, ref _wasLeftTriggered);
     }
 
-    private void UpdateController()
+    private void UpdateControllers()
     {
-        if (!_controller.isValid)
+        if (!_rightController.isValid)
         {
-            var characteristics = useRightHand
-                ? InputDeviceCharacteristics.Right | InputDeviceCharacteristics.Controller
-                : InputDeviceCharacteristics.Left | InputDeviceCharacteristics.Controller;
-
             var devices = new System.Collections.Generic.List<InputDevice>();
-            InputDevices.GetDevicesWithCharacteristics(characteristics, devices);
+            InputDevices.GetDevicesWithCharacteristics(
+                InputDeviceCharacteristics.Right | InputDeviceCharacteristics.Controller,
+                devices
+            );
 
             if (devices.Count > 0)
             {
-                _controller = devices[0];
+                _rightController = devices[0];
             }
         }
+
+        if (!_leftController.isValid)
+        {
+            var devices = new System.Collections.Generic.List<InputDevice>();
+            InputDevices.GetDevicesWithCharacteristics(
+                InputDeviceCharacteristics.Left | InputDeviceCharacteristics.Controller,
+                devices
+            );
+
+            if (devices.Count > 0)
+            {
+                _leftController = devices[0];
+            }
+        }
+    }
+
+    private void CheckTriggerAndShoot(ref InputDevice controller, ref bool wasTriggered)
+    {
+        if (!controller.isValid)
+        {
+            wasTriggered = false;
+            return;
+        }
+
+        if (!controller.TryGetFeatureValue(CommonUsages.triggerButton, out bool isTriggered))
+        {
+            wasTriggered = false;
+            return;
+        }
+
+        if (isTriggered && !wasTriggered)
+        {
+            ShootRaycast();
+        }
+
+        wasTriggered = isTriggered;
     }
 
     private void ShootRaycast()
@@ -109,27 +127,22 @@ public class TriggerRaycastEffect : MonoBehaviour
         Vector3 origin = rayOrigin.position;
         Vector3 direction = rayOrigin.forward;
 
-        // デバッグ表示
         if (showDebugRay)
         {
             Debug.DrawRay(origin, direction * maxDistance, Color.red, 1f);
         }
 
-        // Raycast実行
         if (Physics.Raycast(origin, direction, out RaycastHit hit, maxDistance, hitLayers))
         {
-            // エフェクト生成
             GameObject effect = Instantiate(effectPrefab, hit.point, Quaternion.LookRotation(hit.normal));
             Destroy(effect, 2f);
             Debug.Log($"[TriggerRaycastEffect] Hit: {hit.collider.name} at {hit.point}");
 
-            // zakoタグなら死亡処理
             if (hit.collider.CompareTag("zako"))
             {
                 HandleZakoHit(hit.collider.gameObject, hit.point, rayOrigin.forward);
             }
 
-            // Coreという名前ならEmission解除
             if (hit.collider.name.Contains("Core"))
             {
                 HandleCoreHit(hit.collider.gameObject);
@@ -169,6 +182,7 @@ public class TriggerRaycastEffect : MonoBehaviour
             GameObject clone = Instantiate(cloneOnZakoHit, hitPoint, rotation);
             Destroy(clone, cloneDestroyDelay);
         }
+
         Destroy(zako, 2.4f);
         Debug.Log($"[TriggerRaycastEffect] Zako hit: {zako.name} - Die triggered, destroying in 1s");
     }
