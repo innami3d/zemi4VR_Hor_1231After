@@ -256,7 +256,7 @@ public class NetworkManager : MonoBehaviour
             "# First valid IP line is used as OSC target\n" +
             "# You can use either plain IP or key=value format\n" +
             "# Example: target_ip=192.168.1.10\n" +
-            "192.168.10.115\n";
+            "192.168.0.253\n";
 
         try
         {

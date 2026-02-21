@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Quest3のBボタンを3回連打するとOSCメッセージを送信するスクリプト
+/// Quest3のA/B/X/Yボタンを3回連打するとOSCメッセージを送信するスクリプト
 /// </summary>
 public class TripleTapOSCSender : MonoBehaviour
 {
@@ -27,14 +27,44 @@ public class TripleTapOSCSender : MonoBehaviour
 
     void Update()
     {
-        // Quest3のBボタン（右コントローラー）を検出
-        if (OVRInput.GetDown(OVRInput.Button.Two))
+        // Quest3のA/B/X/Yボタンを検出
+        if (TryGetTappedButton(out string buttonName))
         {
-            HandleButtonPress();
+            HandleButtonPress(buttonName);
         }
     }
 
-    private void HandleButtonPress()
+    private bool TryGetTappedButton(out string buttonName)
+    {
+        if (OVRInput.GetDown(OVRInput.RawButton.A))
+        {
+            buttonName = "A";
+            return true;
+        }
+
+        if (OVRInput.GetDown(OVRInput.RawButton.B))
+        {
+            buttonName = "B";
+            return true;
+        }
+
+        if (OVRInput.GetDown(OVRInput.RawButton.X))
+        {
+            buttonName = "X";
+            return true;
+        }
+
+        if (OVRInput.GetDown(OVRInput.RawButton.Y))
+        {
+            buttonName = "Y";
+            return true;
+        }
+
+        buttonName = string.Empty;
+        return false;
+    }
+
+    private void HandleButtonPress(string buttonName)
     {
         float currentTime = Time.time;
 
@@ -47,7 +77,7 @@ public class TripleTapOSCSender : MonoBehaviour
         tapCount++;
         lastTapTime = currentTime;
 
-        Debug.Log($"Bボタン タップ回数: {tapCount}");
+        Debug.Log($"{buttonName}ボタン タップ回数: {tapCount}");
 
         // 3回連打で送信
         if (tapCount >= 3)

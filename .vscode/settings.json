@@ -66,5 +66,5 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj"
     },
-    "dotnet.defaultSolution": "zemi4VR_Hor_1231After.sln"
+    "dotnet.defaultSolution": "zemi4VR_Hor_After1231.sln"
 }
