@@ -6861,7 +6861,7 @@ MonoBehaviour:
   emissionFadeDuration: 1
   emissionRedIntensity: 0.8
   sendOSC: {fileID: 1362735538}
-  chubossOscAddress: /cue/call/KillCreature
+  killOscAddress: /event/KillZako
   isEnabled: 1
 --- !u!114 &1061669037
 MonoBehaviour:
@@ -7122,6 +7122,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   rayOrigin: {fileID: 1085028649}
+  sendOSC: {fileID: 1362735538}
+  killOscAddress: /event/KillZako
   showDebugRay: 1
 --- !u!1 &1104553389
 GameObject:

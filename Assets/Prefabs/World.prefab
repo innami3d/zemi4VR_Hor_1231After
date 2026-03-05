@@ -19130,8 +19130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetObject: {fileID: 4354368243330617664}
-  rotationSpeed: 150
-  sendOSC: {fileID: 8805086303441884187}
+  bpm: 184
 --- !u!1 &9030191564894975080
 GameObject:
   m_ObjectHideFlags: 0
@@ -21243,15 +21242,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2822491249151568967, guid: 6d35b36cca9d84f4b872aa0e12501e10, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2822491249151568967, guid: 6d35b36cca9d84f4b872aa0e12501e10, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2822491249151568967, guid: 6d35b36cca9d84f4b872aa0e12501e10, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2822491249151568967, guid: 6d35b36cca9d84f4b872aa0e12501e10, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2822491249151568967, guid: 6d35b36cca9d84f4b872aa0e12501e10, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -39,6 +39,13 @@ public class TriggerRaycastEffect : MonoBehaviour
     [Tooltip("Raycastを飛ばすTransform（未設定ならこのオブジェクト）")]
     public Transform rayOrigin;
 
+    [Header("OSC設定")]
+    [Tooltip("OSC送信用")]
+    public SendOSC sendOSC;
+
+    [Tooltip("敵撃破時に送信するOSCアドレス")]
+    public string killOscAddress = "/cue/call/KillChuboss";
+
     [Header("デバッグ")]
     public bool showDebugRay = true;
 
@@ -166,6 +173,13 @@ public class TriggerRaycastEffect : MonoBehaviour
         if (animator != null)
         {
             animator.SetTrigger("Die");
+        }
+
+        // 敵撃破時にOSCを送信
+        if (sendOSC != null)
+        {
+            sendOSC.SendOsc(killOscAddress);
+            Debug.Log($"[TriggerRaycastEffect] OSC送信: {killOscAddress} - {zako.name}");
         }
 
         if (emissionFadeDuration > 0f)

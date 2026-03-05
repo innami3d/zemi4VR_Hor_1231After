@@ -10,13 +10,17 @@ public class YAxisRotator : MonoBehaviour
     [Tooltip("回転させる対象のオブジェクト（未指定の場合は自身）")]
     public Transform targetObject;
 
-    [Tooltip("回転速度（度/秒）")]
-    public float rotationSpeed = 90f;
+    [Tooltip("BPM（8拍で1回転）")]
+    public float bpm = 120f;
+
+    /// <summary>
+    /// BPMから計算された回転速度（度/秒）
+    /// 8拍 = 480/BPM 秒で360度回転 → 度/秒 = BPM / 60 * 45
+    /// </summary>
+    private float RotationSpeed => bpm / 60f * 45f;
 
     [Header("OSC設定")]
     [Tooltip("OSC送信用")]
-    public SendOSC sendOSC;
-
     // 累積回転角度
     private float totalRotation = 0f;
 
@@ -43,7 +47,7 @@ public class YAxisRotator : MonoBehaviour
         }
 
         // Y軸中心に回転
-        float rotationThisFrame = rotationSpeed * Time.deltaTime;
+        float rotationThisFrame = RotationSpeed * Time.deltaTime;
         targetObject.Rotate(0f, rotationThisFrame, 0f, Space.Self);
 
         // 累積回転角度を更新
@@ -63,21 +67,6 @@ public class YAxisRotator : MonoBehaviour
             rotationCount = currentRotationCount;
             lastCountedRotation = currentRotationCount;
             Debug.Log($"[YAxisRotator] 回転数: {rotationCount} (累積: {totalRotation:F1}度)");
-
-            // 8回目までOSC送信
-            if (rotationCount <= 8 && sendOSC != null)
-            {
-                if (rotationCount == 7)
-                {
-                    // 7回目は特別なキュー
-                    sendOSC.SendOsc("/cue/call/JumpComplete7");
-                }
-                else
-                {
-                    // 1-6回目と8回目はJumpAction
-                    sendOSC.SendOsc("/event/JumpAction");
-                }
-            }
         }
     }
 

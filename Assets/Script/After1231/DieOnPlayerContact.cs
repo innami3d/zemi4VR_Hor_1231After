@@ -38,8 +38,8 @@ public class DieOnPlayerContact : MonoBehaviour
     [Tooltip("OSC送信用")]
     public SendOSC sendOSC;
 
-    [Tooltip("Chuboss撃破時に送信するOSCアドレス")]
-    public string chubossOscAddress = "/cue/call/KillChuboss";
+    [Tooltip("敵撃破時に送信するOSCアドレス")]
+    public string killOscAddress = "/cue/call/KillChuboss";
 
     [Header("有効/無効")]
     public bool isEnabled = true;
@@ -97,6 +97,7 @@ public class DieOnPlayerContact : MonoBehaviour
         if (animator != null)
         {
             animator.SetTrigger(dieTriggerName);
+            sendOSC.SendOsc(killOscAddress);
         }
 
         if (emissionFadeDuration > 0f)
@@ -114,11 +115,11 @@ public class DieOnPlayerContact : MonoBehaviour
             Destroy(clone, cloneDestroyDelay);
         }
 
-        // Chubossの場合はOSCを送信
-        if (target.name.Contains("Chuboss") && sendOSC != null)
+        // 敵擃破時にOSCを送信
+        if (sendOSC != null)
         {
-            sendOSC.SendOsc(chubossOscAddress);
-            Debug.Log($"[DieOnPlayerContact] OSC送信: {chubossOscAddress}");
+            sendOSC.SendOsc(killOscAddress);
+            Debug.Log($"[DieOnPlayerContact] OSC送信: {killOscAddress} - {target.name}");
         }
 
         Destroy(target, destroyDelay);
