@@ -6,6 +6,7 @@ using UnityEngine;
 /// </summary>
 public class DieOnPlayerContact : MonoBehaviour
 {
+    private enum MatchType { None, Tag, Name }
     [Header("ターゲット判定")]
     [Tooltip("対象のタグリスト")]
     public string[] targetTags = { "zako" };
@@ -38,8 +39,11 @@ public class DieOnPlayerContact : MonoBehaviour
     [Tooltip("OSC送信用")]
     public SendOSC sendOSC;
 
-    [Tooltip("敵撃破時に送信するOSCアドレス")]
+    [Tooltip("タグマッチ時に送信するOSCアドレス")]
     public string killOscAddress = "/cue/call/KillChuboss";
+
+    [Tooltip("名前マッチ時に送信するOSCアドレス")]
+    public string nameKillOscAddress = "/cue/call/KillByName";
 
     [Header("有効/無効")]
     public bool isEnabled = true;
@@ -56,10 +60,11 @@ public class DieOnPlayerContact : MonoBehaviour
     {
         if (!isEnabled) return;
 
-        if (IsTarget(other.gameObject))
+        MatchType match = GetMatchType(other.gameObject);
+        if (match != MatchType.None)
         {
             Vector3 hitPoint = other.ClosestPoint(transform.position);
-            HandleTargetDeath(other.gameObject, hitPoint, transform.forward);
+            HandleTargetDeath(other.gameObject, hitPoint, transform.forward, match);
         }
     }
 
@@ -67,37 +72,37 @@ public class DieOnPlayerContact : MonoBehaviour
     {
         if (!isEnabled) return;
 
-        if (IsTarget(collision.gameObject))
+        MatchType match = GetMatchType(collision.gameObject);
+        if (match != MatchType.None)
         {
             Vector3 hitPoint = collision.contactCount > 0
                 ? collision.GetContact(0).point
                 : collision.transform.position;
-            HandleTargetDeath(collision.gameObject, hitPoint, transform.forward);
+            HandleTargetDeath(collision.gameObject, hitPoint, transform.forward, match);
         }
     }
 
-    private bool IsTarget(GameObject obj)
+    private MatchType GetMatchType(GameObject obj)
     {
         // タグチェック
         foreach (string t in targetTags)
         {
-            if (obj.CompareTag(t)) return true;
+            if (obj.CompareTag(t)) return MatchType.Tag;
         }
         // 名前チェック（含むかどうか）
         foreach (string n in targetNames)
         {
-            if (obj.name.Contains(n)) return true;
+            if (obj.name.Contains(n)) return MatchType.Name;
         }
-        return false;
+        return MatchType.None;
     }
 
-    private void HandleTargetDeath(GameObject target, Vector3 hitPoint, Vector3 hitForward)
+    private void HandleTargetDeath(GameObject target, Vector3 hitPoint, Vector3 hitForward, MatchType match)
     {
         Animator animator = target.GetComponent<Animator>();
         if (animator != null)
         {
             animator.SetTrigger(dieTriggerName);
-            sendOSC.SendOsc(killOscAddress);
         }
 
         if (emissionFadeDuration > 0f)
@@ -115,11 +120,12 @@ public class DieOnPlayerContact : MonoBehaviour
             Destroy(clone, cloneDestroyDelay);
         }
 
-        // 敵擃破時にOSCを送信
+        // マッチ種別に応じたOSCを送信
         if (sendOSC != null)
         {
-            sendOSC.SendOsc(killOscAddress);
-            Debug.Log($"[DieOnPlayerContact] OSC送信: {killOscAddress} - {target.name}");
+            string address = (match == MatchType.Name) ? nameKillOscAddress : killOscAddress;
+            sendOSC.SendOsc(address);
+            Debug.Log($"[DieOnPlayerContact] OSC送信: {address} (match={match}) - {target.name}");
         }
 
         Destroy(target, destroyDelay);

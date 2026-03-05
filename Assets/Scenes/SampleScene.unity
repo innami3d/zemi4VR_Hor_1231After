@@ -6862,6 +6862,7 @@ MonoBehaviour:
   emissionRedIntensity: 0.8
   sendOSC: {fileID: 1362735538}
   killOscAddress: /event/KillZako
+  nameKillOscAddress: /cue/call/KilCreature
   isEnabled: 1
 --- !u!114 &1061669037
 MonoBehaviour:
